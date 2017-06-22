@@ -1,0 +1,23 @@
+version: '2'
+
+services:
+  wlsadmin:
+    image: playniuniu/weblogic-domain:12.2.1.2
+    ports:
+        - '8001:8001'
+
+  ManagedServer-01:
+    image: playniuniu/weblogic-domain:12.2.1.2
+    ports:
+      - '7001:7001'
+    environment:
+      - MS_NAME=ManagedServer-01
+    command: ["/home/oracle/bin/create-managed.sh"]
+
+  ManagedServer-02:
+    image: playniuniu/weblogic-domain:12.2.1.2
+    ports:
+      - '7002:7001'
+    environment:
+      - MS_NAME=ManagedServer-02
+    command: ["/home/oracle/bin/create-managed.sh"]

@@ -2,16 +2,28 @@
 
 ### Description
 
-This docker is follow the guide from [Oracle Weblogic Docker](https://github.com/oracle/docker-images/tree/master/OracleWebLogic) and [Workshop intro](https://github.com/oracle/docker-images/tree/master/OracleWebLogic/workshops/intro)
+This is Oracle Weblogic 12.2.1.2 Docker image
 
-I have already build the image [centos-serverjre](https://hub.docker.com/r/playniuniu/centos-serverjre/) and [weblogic-base](https://hub.docker.com/r/playniuniu/weblogic-base/) for this image
+### Run
 
-You can follow the code there for build you own weblogic image
-
-### Start Weblogic AdminServer
+Go to compose folder and run
 
 ```bash
-docker run -d -p 8001:8001 --name=wlsadmin playniuniu/weblogic-domain:12.2.1.2 startWebLogic.sh
+docker-compose up -d
+```
+
+### Run step by step
+
+#### 1. create bridge network
+
+```bash
+docker network create -d bridge weblogic
+```
+
+#### 2. Run AdminServer
+
+```bash
+docker run -d -p 8001:8001 --net weblogic --name=wlsadmin playniuniu/weblogic-domain:12.2.1.2
 ```
 
 You can login your web with [http://127.0.0.1:8001/console](http://127.0.0.1:8001/console)
@@ -22,49 +34,15 @@ Login using **weblogic/welcome1** and verify that only one server (Admin Server)
 
 ![](http://ww2.sinaimg.cn/large/72f96cbajw1f9aqr5bvaqj21kw114wr5.jpg)
 
-### Other Weblogic Type
-
-This container also can start other weblogic server type
-
-1. Start NodeManager (Manually):
-
-	```bash
-	docker run -d --link wlsadmin:wlsadmin playniuniu/weblogic-domain:12.2.1.2 startNodeManager.sh
-	```
-
-
-2. Start NodeManager and Create a Machine Automatically:
-
-	```bash
-	docker run -d --link wlsadmin:wlsadmin playniuniu/weblogic-domain:12.2.1.2 createMachine.sh
-	```
-
-3. Start NodeManager, Create a Machine, and Create a ManagedServer Automatically
-
-	```bash
-	docker run -d --link wlsadmin:wlsadmin playniuniu/weblogic-domain:12.2.1.2 createServer.sh
-	```
-	
-### Start Weblogic ManagedServer
-
-Run the command below:
+#### Run ManagedServer
 
 ```bash
-docker run -d --link wlsadmin:wlsadmin playniuniu/weblogic-domain:12.2.1.2 createServer.sh
+docker run -d --net weblogic -p 7001:7001 -e MS_NAME=ManageServer-01 playniuniu/weblogic-domain:12.2.1.2 create-managed.sh
+
+docker run -d --net weblogic -p 7002:7001 -e MS_NAME=ManageServer-02 playniuniu/weblogic-domain:12.2.1.2 create-managed.sh
 ```
 
-Login to [AdminServer](http://127.0.0.1:8001/console) and notice that a new Managed Server has been created and it is up and running on port 7001. 
-
-![](http://ww4.sinaimg.cn/large/72f96cbajw1f9aqr4thh2j21kw1147i6.jpg)
- 
-Click on Machines and notice that a new Machine has also been created:
-
-![](http://ww2.sinaimg.cn/large/72f96cbajw1f9aqr4d8uoj21kw0z7qfo.jpg)
- 
-Click on the newly created Machine and then verify the NodeManager Configuration. A new Nodemanager has been created and started
-
-![](http://ww4.sinaimg.cn/large/72f96cbajw1f9aqr49kgrj21kw0zcwv9.jpg)
-
+Login to [AdminServer](http://127.0.0.1:8001/console) and notice that a new Managed Server has been created and it is up and running. 
 
 ### Other
 
